@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Tracker</title>
+    <style>
+        * {
+            padding: 7px;
+            margin: 10px;
+            text-align: center;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        form {
+            background-color: rgb(152, 159, 248);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 600px;
+            border-radius: 30px;
+        }
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: -1px;
+        }
+        label {
+            width: 70%;
+            text-align: left;
+        }
+        input {
+            width: 55%;
+            padding: 10px;
+            border-radius: 20px;
+        }
+        button {
+            background-color: blue;
+            color: white;
+            border: 0;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 18px;
+            white-space: nowrap;
+            border-radius: 20px;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 22px;
+            font-weight: 500;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>EXCEL TRACKER</h1>
+    <h2>Drop the Link of the Sheet. Let's track! </h2>
+   <!-- <form method="post" action="/notifications/process_form/">-->
+    <form id="tracker-form" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="sheet_link"><h3>Google Sheet Link:</h3></label>
+            <input type="text" id="sheet_link" name="sheet_link" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email"><h3>Email:</h3></label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password"><h3>App Password:</h3></label>
+            <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="minutes"><h3>Minutes:</h3></label>
+            <input type="number" id="minutes" name="minutes" required>
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+    <div id="message"></div>
+    <script>
+        document.getElementById('tracker-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const csrfToken = formData.get('csrfmiddlewaretoken');
+
+            fetch('/notifications/process_form/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('message').innerText = data;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
